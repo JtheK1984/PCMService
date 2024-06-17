@@ -73,7 +73,7 @@ begin
   end
   else
   begin
-    WriteLog(PCM_Logname,'ExecuteAndWaitFor konnte nicht ausgeführt werden. '+
+    WriteLog(PCM_Logname,rs_PCMService_ExecuteWaitFor +
                 ' Error-Code '+intToStr(GetLastError),2);
   end;
 end;
@@ -423,7 +423,7 @@ begin
                                          'LEFT OUTER JOIN manager_Konfession k ON k.ID = kon.ID_Konfession Where kon.ID_Benutzer = :ID_Benutzer';
   dm_PCM.qry_Work.ParamByName('ID_Benutzer').AsInteger := StrToInt(AID_Benutzer);
   dm_PCM.qry_Work.Open;
-  WriteLog(PCM_Logname,'Kontakte lesen, Anzahl:' + IntToStr(dm_PCM.qry_Work.RecordCount),0);
+  WriteLog(PCM_Logname,rs_PCMAPPServer_Kontakteanzahl+ IntToStr(dm_PCM.qry_Work.RecordCount),0);
   if dm_PCM.qry_Work.RecordCount > 0 then
   begin
     iCode:= 200;
@@ -491,7 +491,7 @@ begin
                                         'WHERE (RecurrenceInfo IS NOT NULL OR START >= DATE_ADD(now(), INTERVAL -30 DAY)) AND ID_Benutzer = :ID and bearbeitetam is null' ;
   dm_PCM.qry_Work.ParamByName('ID').AsInteger := StrToInt(AID_Benutzer);
   dm_PCM.qry_Work.Open;
-  WriteLog(PCM_Logname,'Kalender lesen für Benutzer ' + AID_Benutzer + ', Anzahl:' + IntToStr(dm_PCM.qry_Work.RecordCount),0);
+  WriteLog(PCM_Logname,rs_PCMAPPServer_Kalenderanzahl + AID_Benutzer + ', Anzahl:' + IntToStr(dm_PCM.qry_Work.RecordCount),0);
   if dm_PCM.qry_Work.RecordCount > 0 then
   begin
     iCode:= 200;
@@ -551,7 +551,7 @@ begin
                                          'Where ID_Benutzer = :ID';
   dm_PCM.qry_Work.ParamByName('ID').AsInteger := StrToInt(AID_Benutzer);
   dm_PCM.qry_Work.Open;
-  WriteLog(PCM_Logname,'Passwörter lesen, Anzahl:' + IntToStr(dm_PCM.qry_Work.RecordCount),0);
+  WriteLog(PCM_Logname,rs_PCMAPPServer_Passwordanzahl + IntToStr(dm_PCM.qry_Work.RecordCount),0);
   if dm_PCM.qry_Work.RecordCount > 0 then
   begin
     iCode:= 200;
@@ -610,7 +610,7 @@ begin
                                         'WHERE s.ID_Benutzer = :ID';
   dm_PCM.qry_Work.ParamByName('ID').AsInteger := StrToInt(AID_Benutzer);
   dm_PCM.qry_Work.Open;
-  WriteLog(PCM_Logname,'Serials lesen, Anzahl:' + IntToStr(dm_PCM.qry_Work.RecordCount),0);
+  WriteLog(PCM_Logname,rs_PCMAPPServer_Serialsanzahl + IntToStr(dm_PCM.qry_Work.RecordCount),0);
 if dm_PCM.qry_Work.RecordCount > 0 then
   begin
     iCode:= 200;
@@ -665,7 +665,7 @@ begin
                                          'FROM manager_finanzen_ausgaben Where ID_Benutzer = :ID';
   dm_PCM.qry_Work.ParamByName('ID').AsInteger := StrToInt(AID_Benutzer);
   dm_PCM.qry_Work.Open;
-  WriteLog(PCM_Logname,'Ausgaben lesen, Anzahl:' + IntToStr(dm_PCM.qry_Work.RecordCount),0);
+  WriteLog(PCM_Logname,rs_PCMAPPServer_Ausgabenanzahl + IntToStr(dm_PCM.qry_Work.RecordCount),0);
 //  Result := dm_PCM.qry_Work;
 end;
 // Einnahmen ermitteln
@@ -678,7 +678,7 @@ begin
                                          'FROM manager_finanzen_Einnahmen Where ID_Benutzer = :ID';
   dm_PCM.qry_Work.ParamByName('ID').AsInteger := StrToInt(AID_Benutzer);
   dm_PCM.qry_Work.Open;
-  WriteLog(PCM_Logname,'Einnahmen lesen, Anzahl:' + IntToStr(dm_PCM.qry_Work.RecordCount),0);
+  WriteLog(PCM_Logname,rs_PCMAPPServer_Einnahmenanzahl + IntToStr(dm_PCM.qry_Work.RecordCount),0);
 //  Result := dm_PCM.qry_Work;
 end;
 end.

@@ -82,7 +82,7 @@ begin
     IniFile.Free;
     if Cmd <> '' then
     begin
-      Writelog(PCM_LOGName,'Aufruf von ' + Name,2);
+      Writelog(PCM_LOGName,rs_PCMService_Aufrufvon + Name,2);
 //      ExecuteAndWaitFor(Cmd);
     end;
   end;
@@ -93,7 +93,7 @@ begin
     Proc;
   except
     on E: Exception do
-      Writelog(PCM_logname,'Exception: ' + E.Message, 2);
+      Writelog(PCM_logname,rs_PCM_Exception + E.Message, 2);
   end;
 end;
 procedure ServiceController(CtrlCode: DWord); stdcall;
@@ -197,7 +197,7 @@ procedure TPCM_Service.TerminAusfuehren;
   end;
 begin
   try
-    Writelog(PCM_Logname,'Termin ' + qryTermine.FieldByName('Name').AsString + ' wird ausgeführt.',0);
+    Writelog(PCM_Logname,rs_PCMService_Termin1 + qryTermine.FieldByName('Name').AsString + rs_PCMService_Termin2,0);
     dm_PCM.qry_Service.SQL.Text := 'SELECT * FROM service_Aufgaben WHERE ID_Termine = :ID_Termine ORDER BY Reihenfolge ASC';
     dm_PCM.qry_Service.ParamByName('ID_Termine').AsInteger := qryTermine.FieldByName('ID').AsInteger;
     dm_PCM.qry_Service.Open;
@@ -242,7 +242,7 @@ begin
       dm_PCM.qry_Service.Next;
     end;
     dm_PCM.qry_Service.Close;
-    Writelog(PCM_logname,'Nächsten Zeitpunkt setzen',0);
+    Writelog(PCM_logname,rs_PCMService_NaechsterZeitpunktSetzen,0);
     qryTermine.Edit;
     qryTermine.FieldByName('NaechsterZeitpunkt').AsDateTime :=
       BerechneNaechstenZeitpunkt(
@@ -253,7 +253,7 @@ begin
     qryTermine.Post;
   except
     on E: Exception do
-      Writelog(PCM_logname,'Exception beim Ausführen des Termins "' +
+      Writelog(PCM_logname,rs_PCMService_ExceptionTermin +
         qryTermine.FieldByName('Name').AsString + '": ' + E.Message,2);
   end;
 end;
@@ -264,7 +264,7 @@ begin
   reg := TRegistry.Create(KEY_READ or KEY_Write);
   try
     reg.RootKey:= HKEY_LOCAL_MACHINE;
-    Writelog(PCM_Logname,'Erstelle Registryeinträge',0);
+    Writelog(PCM_Logname,rs_PCMRestserver_Registry,0);
     if reg.OpenKey('System\CurrentControlSet\Services\PCM_Service',False) then
       reg.WriteString('Description','Allgemeiner Dienst für PCM');
   finally
@@ -275,9 +275,9 @@ procedure TPCM_Service.ServiceStart(Sender: TService;var Started: Boolean);
 begin
   if dm_PCM.ReadServerAdress then
   begin
-    WriteLog(PCM_LOGname,'Verbindung erfolgreich hergestellt',0);
-    WriteLog(PCM_LOGname,'HD-ID:'+ IntToStr(dm_PCM.iHDID),0);
-    WriteLog(PCM_LOGname,'PC-ID:'+ dm_PCM.sPCID,0);
+    WriteLog(PCM_LOGname,rs_PCMLog_Verbindungerfolgreich,0);
+    WriteLog(PCM_LOGname,rs_PCMService_HIID + IntToStr(dm_PCM.iHDID),0);
+    WriteLog(PCM_LOGname,rs_PCMService_PCID + dm_PCM.sPCID,0);
     Timer1.Enabled:= true;
   end;
 end;

@@ -108,7 +108,7 @@ begin
       valid := True;
     end
     else begin
-//      WriteLog(PCM_Logname,'Falsches Passwort',1);
+      WriteLog(PCM_Logname,rs_PCMLog_FalschesPW,1);
     end;
 end;
 
