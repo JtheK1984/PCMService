@@ -3,20 +3,60 @@ unit PCM.Main;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, Registry,
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.SvcMgr, Vcl.Dialogs,
-  IdHTTPWebBrokerBridge, Web.HTTPApp, IdContext, IdSSLOpenSSL,
-  Vcl.ExtCtrls, IdBaseComponent, IdComponent, IdIOHandler, IdIOHandlerSocket,
-  IdIOHandlerStack, IdSSL, FireDAC.Stan.Intf, FireDAC.Stan.Option,
-  FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf, FireDAC.Stan.Def,
-  FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Phys.MySQL,
-  FireDAC.Phys.MySQLDef, FireDAC.VCLUI.Wait, Data.DB, FireDAC.Comp.Client,
-  FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
-  FireDAC.Comp.UI, FireDAC.Comp.DataSet, IdCustomTCPServer, IdCustomHTTPServer,
-  IdHTTPServer, ZipForge,inifiles,system.DateUtils, REST.Types, REST.Client,
-  REST.Authenticator.Basic, Data.Bind.Components, Data.Bind.ObjectScope;
+  {$Region Uses}
+  Data.Bind.Components,
+  Data.Bind.ObjectScope,
+  Data.DB,
+  FireDAC.Comp.Client,
+  FireDAC.Comp.DataSet,
+  FireDAC.Comp.UI,
+  FireDAC.DApt,
+  FireDAC.DApt.Intf,
+  FireDAC.DatS,
+  FireDAC.Phys,
+  FireDAC.Phys.Intf,
+  FireDAC.Phys.MySQL,
+  FireDAC.Phys.MySQLDef,
+  FireDAC.Stan.Async,
+  FireDAC.Stan.Def,
+  FireDAC.Stan.Error,
+  FireDAC.Stan.Intf,
+  FireDAC.Stan.Option,
+  FireDAC.Stan.Param,
+  FireDAC.Stan.Pool,
+  FireDAC.UI.Intf,
+  FireDAC.VCLUI.Wait,
+  IdBaseComponent,
+  IdComponent,
+  IdContext,
+  IdCustomHTTPServer,
+  IdCustomTCPServer,
+  IdHTTPServer,
+  IdHTTPWebBrokerBridge,
+  IdIOHandler,
+  IdIOHandlerSocket,
+  IdIOHandlerStack,
+  IdSSL,
+  IdSSLOpenSSL,
+  inifiles,
+  Registry,
+  REST.Authenticator.Basic,
+  REST.Client,
+  REST.Types,
+  System.Classes,
+  system.DateUtils,
+  System.SysUtils,
+  Vcl.Controls,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls,
+  Vcl.Graphics,
+  Vcl.SvcMgr,
+  Web.HTTPApp,
+  Winapi.Messages,
+  Winapi.Windows;
+  {$EndRegion Uses}
 type
+  {$Region Type}
   TAufgabenThread = class(TThread)
   private
     { Private-Deklarationen }
@@ -24,68 +64,53 @@ type
     procedure Execute; override;
   public
     Proc: TProcedure;
-end;
-type
+  end;
+
   TPCM_Service = class(TService)
-    FDManager: TFDManager;
-    ZipForge1: TZipForge;
-    qryTermine: TFDQuery;
-    Timer1: TTimer;
-    Timer2: TTimer;
-    FDGUIxWaitCursor1: TFDGUIxWaitCursor;
-    FDPhysMySQLDriverLink1: TFDPhysMySQLDriverLink;
-    RESTClient1: TRESTClient;
-    RESTRequest1: TRESTRequest;
-    RESTResponse1: TRESTResponse;
-    HTTPBasicAuthenticator1: THTTPBasicAuthenticator;
-    procedure ServiceStart(Sender: TService; var Started: Boolean);
+    fdmgr_PCMService: TFDManager;
+    physdvrLnk_Mysql: TFDPhysMySQLDriverLink;
+    qry_Termine: TFDQuery;
+    tmr_BackupDatabase: TTimer;
+    tmr_Service: TTimer;
+    wtCsr_Mysql: TFDGUIxWaitCursor;
     procedure ServiceAfterInstall(Sender: TService);
-    procedure Timer2Timer(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
+    procedure ServiceStart(Sender: TService; var Started: Boolean);
+    procedure tmr_BackupDatabaseTimer(Sender: TObject);
+    procedure tmr_ServiceTimer(Sender: TObject);
   private
     { Private-Deklarationen }
-    function BerechneNaechstenZeitpunkt(AZeitTyp, AZeit1, AZeit2: Integer; AZeit3: TDatetime): TDatetime;
   public
     { Public-Deklarationen }
+    dtDateTime: tDateTime;
+    iCustomTaskID: Integer;
+    filename: String;
+    fINI: TextFile;
     function GetServiceController: TServiceController; override;
     procedure TerminAusfuehren;
   end;
-
+  {$EndRegion type}
 var
   PCM_Service: TPCM_Service;
-  dtDateTime: tDateTime;
-  fINI: TextFile;
-  filename: String;
-  CustomTaskID: Integer;
+
 
 implementation
 
 {$R *.dfm}
 
-uses  PCM.Functions,
+uses
       PCM.Data,
+      PCM.Functions,
       PCM.Functions.Server.Methods,
-      IdGlobal;
+      PCM.Strings;
 
-procedure CustomTask;
-var
-  IniFile: TIniFile;
-  Name, Cmd: string;
+procedure ServiceController(CtrlCode: DWord); stdcall;
 begin
-  if CustomTaskID > 0 then
-  begin
-    IniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'PCMService.ini');
-    Name := IniFile.ReadString('CustomTasks',
-      'Name' + IntToStr(CustomTaskID), '');
-    Cmd := IniFile.ReadString('CustomTasks',
-      'Command' + IntToStr(CustomTaskID), '');
-    IniFile.Free;
-    if Cmd <> '' then
-    begin
-      Writelog(PCM_LOGName,rs_PCMService_Aufrufvon + Name,2);
-//      ExecuteAndWaitFor(Cmd);
-    end;
-  end;
+  PCM_Service.Controller(CtrlCode);
+end;
+function TPCM_Service.GetServiceController: TServiceController;
+
+begin
+  Result := ServiceController;
 end;
 procedure TAufgabenThread.Execute;
 begin
@@ -96,94 +121,110 @@ begin
       Writelog(PCM_logname,rs_PCM_Exception + E.Message, 2);
   end;
 end;
-procedure ServiceController(CtrlCode: DWord); stdcall;
-begin
-  PCM_Service.Controller(CtrlCode);
-end;
-function TPCM_Service.GetServiceController: TServiceController;
-begin
-  Result := ServiceController;
-end;
-function TPCM_Service.BerechneNaechstenZeitpunkt(AZeitTyp, AZeit1, AZeit2: Integer; AZeit3: TDatetime): TDatetime;
+procedure TPCM_Service.ServiceAfterInstall(Sender: TService);
 var
-  Jetzt, Heute: TDatetime;
-  Year, Month, Day, Hour, Min, Sec, MSec: Word;
-  WeekDay, NextWeekDay, Diff: Integer;
+  reg: TRegistry;
 begin
-  Jetzt := Now;
-  Heute := Date;
-
-  DecodeTime(Jetzt, Hour, Min, Sec, MSec);
-  DecodeDate(Jetzt, Year, Month, Day);
-  case AZeitTyp of
-    // Minuten
-    // Jetzt + n Minuten
-    0:
-      Result := IncMinute(Jetzt, AZeit1);
-    // Stunden
-    // Datum von Heute + Momentane Stunde + n Stunden + n Minuten
-    1:
-      Result :=
-      // Geändert 2202021454 konnte Exception erzeugen, wenn um 23:00 um eine Stunde erhöht wird
-        IncMinute(IncHour(Heute, Hour + AZeit1), AZeit2);
-    // Täglich
-    2:
-      begin
-        // Heute + Zeitpunkt
-        Result := Heute + AZeit3;
-        // Schon vorbei?
-        if Result < Jetzt then
-          // -> Tag um eins erhöhen
-          Result := IncDay(Result, 1);
-      end;
-    // Wöchentlich
-    3:
-      begin
-        // Heutiger Wochentag (1 bis 7)
-        WeekDay := DayOfWeek(Heute);
-        Dec(WeekDay);
-        if WeekDay = 0 then
-          WeekDay := 7;
-        // Nächster Wochentag (1 bis 7)
-        NextWeekDay := AZeit1;
-        // Differenz an Tagen ausrechnen
-        if WeekDay > NextWeekDay then
-          Diff := NextWeekDay + 7 - WeekDay
-        else
-          Diff := NextWeekDay - WeekDay;
-
-        // Heute + Tagdifferenz + Zeitpunkt
-        Result := IncDay(Heute, Diff) + AZeit3;
-        // Schon vorbei?
-        if Result < Jetzt then
-          // Nächste Woche
-          Result := IncDay(Result, 7);
-      end;
-    // Monatlich
-    4:
-      begin
-        // n. Tag des aktuellen Monats, zur angegebenen Zeit
-        Result := EncodeDate(Year, Month, AZeit1) + AZeit3;
-        // Schon vorbei?
-        if Result < Jetzt then
-          // Nächster Monat
-          Result := IncMonth(Result, 1);
-      end;
-    // Manuell
-    5:
-      begin
-        Result := 0;
-      end;
-    // Sekunden
-    6:
-      begin
-        Result := IncSecond(Jetzt, AZeit1);
-      end;
-  else
-    Result := 0;
+  reg := TRegistry.Create(KEY_READ or KEY_Write);
+  try
+    reg.RootKey:= HKEY_LOCAL_MACHINE;
+    Writelog(PCM_Logname,rs_PCMRestserver_Registry,0);
+    if reg.OpenKey('System\CurrentControlSet\Services\PCM_Service',False) then
+      reg.WriteString('Description','Allgemeiner Dienst für PCM');
+  finally
+    reg.Free;
+  end;
+end;
+procedure TPCM_Service.ServiceStart(Sender: TService;var Started: Boolean);
+begin
+  if dm_PCM.ReadServerAdress then
+  begin
+    WriteLog(PCM_LOGname,rs_PCMLog_Verbindungerfolgreich,0);
+    WriteLog(PCM_LOGname,rs_PCMService_HIID + IntToStr(dm_PCM.iHDID),0);
+    WriteLog(PCM_LOGname,rs_PCMService_PCID + dm_PCM.sPCID,0);
+    tmr_Service.Enabled:= true;
   end;
 end;
 procedure TPCM_Service.TerminAusfuehren;
+  function BerechneNaechstenZeitpunkt(AZeitTyp, AZeit1, AZeit2: Integer; AZeit3: TDatetime): TDatetime;
+  var
+    Jetzt, Heute: TDatetime;
+    Year, Month, Day, Hour, Min, Sec, MSec: Word;
+    WeekDay, NextWeekDay, Diff: Integer;
+  begin
+    Jetzt := Now;
+    Heute := Date;
+
+    DecodeTime(Jetzt, Hour, Min, Sec, MSec);
+    DecodeDate(Jetzt, Year, Month, Day);
+    case AZeitTyp of
+      // Minuten
+      // Jetzt + n Minuten
+      0:
+        Result := IncMinute(Jetzt, AZeit1);
+      // Stunden
+      // Datum von Heute + Momentane Stunde + n Stunden + n Minuten
+      1:
+        Result :=
+        // Geändert 2202021454 konnte Exception erzeugen, wenn um 23:00 um eine Stunde erhöht wird
+          IncMinute(IncHour(Heute, Hour + AZeit1), AZeit2);
+      // Täglich
+      2:
+        begin
+          // Heute + Zeitpunkt
+          Result := Heute + AZeit3;
+          // Schon vorbei?
+          if Result < Jetzt then
+            // -> Tag um eins erhöhen
+            Result := IncDay(Result, 1);
+        end;
+      // Wöchentlich
+      3:
+        begin
+          // Heutiger Wochentag (1 bis 7)
+          WeekDay := DayOfWeek(Heute);
+          Dec(WeekDay);
+          if WeekDay = 0 then
+            WeekDay := 7;
+          // Nächster Wochentag (1 bis 7)
+          NextWeekDay := AZeit1;
+          // Differenz an Tagen ausrechnen
+          if WeekDay > NextWeekDay then
+            Diff := NextWeekDay + 7 - WeekDay
+          else
+            Diff := NextWeekDay - WeekDay;
+
+          // Heute + Tagdifferenz + Zeitpunkt
+          Result := IncDay(Heute, Diff) + AZeit3;
+          // Schon vorbei?
+          if Result < Jetzt then
+            // Nächste Woche
+            Result := IncDay(Result, 7);
+        end;
+      // Monatlich
+      4:
+        begin
+          // n. Tag des aktuellen Monats, zur angegebenen Zeit
+          Result := EncodeDate(Year, Month, AZeit1) + AZeit3;
+          // Schon vorbei?
+          if Result < Jetzt then
+            // Nächster Monat
+            Result := IncMonth(Result, 1);
+        end;
+      // Manuell
+      5:
+        begin
+          Result := 0;
+        end;
+      // Sekunden
+      6:
+        begin
+          Result := IncSecond(Jetzt, AZeit1);
+        end;
+    else
+      Result := 0;
+    end;
+  end;
   procedure Execute(What: TProcedure);
   var
     Thread: TAufgabenThread;
@@ -195,11 +236,32 @@ procedure TPCM_Service.TerminAusfuehren;
       ServiceThread.ProcessRequests(False);
     Thread.Free;
   end;
+  procedure CustomTask;
+  var
+    IniFile: TIniFile;
+    Name, Cmd: string;
+  begin
+    if iCustomTaskID > 0 then
+    begin
+      IniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'PCMService.ini');
+      Name := IniFile.ReadString('CustomTasks',
+        'Name' + IntToStr(iCustomTaskID), '');
+      Cmd := IniFile.ReadString('CustomTasks',
+        'Command' + IntToStr(iCustomTaskID), '');
+      IniFile.Free;
+      if Cmd <> '' then
+      begin
+        Writelog(PCM_LOGName,rs_PCMService_Aufrufvon + Name,2);
+  //      ExecuteAndWaitFor(Cmd);
+      end;
+    end;
+  end;
+
 begin
   try
-    Writelog(PCM_Logname,rs_PCMService_Termin1 + qryTermine.FieldByName('Name').AsString + rs_PCMService_Termin2,0);
+    Writelog(PCM_Logname,rs_PCMService_Termin1 + qry_Termine.FieldByName('Name').AsString + rs_PCMService_Termin2,0);
     dm_PCM.qry_Service.SQL.Text := 'SELECT * FROM service_Aufgaben WHERE ID_Termine = :ID_Termine ORDER BY Reihenfolge ASC';
-    dm_PCM.qry_Service.ParamByName('ID_Termine').AsInteger := qryTermine.FieldByName('ID').AsInteger;
+    dm_PCM.qry_Service.ParamByName('ID_Termine').AsInteger := qry_Termine.FieldByName('ID').AsInteger;
     dm_PCM.qry_Service.Open;
     while not dm_PCM.qry_Service.Eof do
     begin
@@ -243,61 +305,37 @@ begin
     end;
     dm_PCM.qry_Service.Close;
     Writelog(PCM_logname,rs_PCMService_NaechsterZeitpunktSetzen,0);
-    qryTermine.Edit;
-    qryTermine.FieldByName('NaechsterZeitpunkt').AsDateTime :=
+    qry_Termine.Edit;
+    qry_Termine.FieldByName('NaechsterZeitpunkt').AsDateTime :=
       BerechneNaechstenZeitpunkt(
-        qryTermine.FieldByName('ZeitTyp').AsInteger,
-        qryTermine.FieldByName('Zeit1').AsInteger,
-        qryTermine.FieldByName('Zeit2').AsInteger,
-        qryTermine.FieldByName('Zeit3').AsDateTime);
-    qryTermine.Post;
+        qry_Termine.FieldByName('ZeitTyp').AsInteger,
+        qry_Termine.FieldByName('Zeit1').AsInteger,
+        qry_Termine.FieldByName('Zeit2').AsInteger,
+        qry_Termine.FieldByName('Zeit3').AsDateTime);
+    qry_Termine.Post;
   except
     on E: Exception do
       Writelog(PCM_logname,rs_PCMService_ExceptionTermin +
-        qryTermine.FieldByName('Name').AsString + '": ' + E.Message,2);
+        qry_Termine.FieldByName('Name').AsString + '": ' + E.Message,2);
   end;
 end;
-procedure TPCM_Service.ServiceAfterInstall(Sender: TService);
-var
-  reg: TRegistry;
-begin
-  reg := TRegistry.Create(KEY_READ or KEY_Write);
-  try
-    reg.RootKey:= HKEY_LOCAL_MACHINE;
-    Writelog(PCM_Logname,rs_PCMRestserver_Registry,0);
-    if reg.OpenKey('System\CurrentControlSet\Services\PCM_Service',False) then
-      reg.WriteString('Description','Allgemeiner Dienst für PCM');
-  finally
-    reg.Free;
-  end;
-end;
-procedure TPCM_Service.ServiceStart(Sender: TService;var Started: Boolean);
-begin
-  if dm_PCM.ReadServerAdress then
-  begin
-    WriteLog(PCM_LOGname,rs_PCMLog_Verbindungerfolgreich,0);
-    WriteLog(PCM_LOGname,rs_PCMService_HIID + IntToStr(dm_PCM.iHDID),0);
-    WriteLog(PCM_LOGname,rs_PCMService_PCID + dm_PCM.sPCID,0);
-    Timer1.Enabled:= true;
-  end;
-end;
-procedure TPCM_Service.Timer1Timer(Sender: TObject);
+procedure TPCM_Service.tmr_ServiceTimer(Sender: TObject);
 var
   Jetzt: TDatetime;
 begin
-  if not qryTermine.Active then
+  if not qry_Termine.Active then
   begin
-    Timer1.Interval := 1000;
-    qryTermine.SQL.Text := 'SELECT * FROM Service_Termine WHERE :PCID or  HDID = :HDID' ;
-    qryTermine.ParamByName('PCID').asString := dm_PCM.sPCID ;
-    qryTermine.ParamByName('HDID').asInteger := dm_PCM.iHDID;
-    qryTermine.Open;
+    tmr_Service.Interval := 1000;
+    qry_Termine.SQL.Text := 'SELECT * FROM Service_Termine WHERE :PCID or  HDID = :HDID' ;
+    qry_Termine.ParamByName('PCID').asString := dm_PCM.sPCID ;
+    qry_Termine.ParamByName('HDID').asInteger := dm_PCM.iHDID;
+    qry_Termine.Open;
     try
-      while not qryTermine.Eof do
+      while not qry_Termine.Eof do
       begin
         Jetzt := Now;
-        if qryTermine.FieldByName('NaechsterZeitpunkt').AsDateTime <> 0 then
-          if qryTermine.FieldByName('NaechsterZeitpunkt').AsDateTime <= Jetzt then
+        if qry_Termine.FieldByName('NaechsterZeitpunkt').AsDateTime <> 0 then
+          if qry_Termine.FieldByName('NaechsterZeitpunkt').AsDateTime <= Jetzt then
           begin
             try
               TerminAusfuehren;
@@ -305,19 +343,19 @@ begin
               on e:Exception do
               begin
                 WriteLog(PCM_Logname,e.Message,2);
-                qryTermine.Close;
+                qry_Termine.Close;
                 raise;
               end;
             end;
           end;
-        qryTermine.Next;
+        qry_Termine.Next;
       end;
     finally
-      qryTermine.Close;
+      qry_Termine.Close;
     end;
   end;
 end;
-procedure TPCM_Service.Timer2Timer(Sender: TObject);
+procedure TPCM_Service.tmr_BackupDatabaseTimer(Sender: TObject);
 begin
 //  Backup(Sender);
  //( BackupDatabase;

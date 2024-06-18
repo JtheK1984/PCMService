@@ -11,8 +11,8 @@ object dm_PCM: Tdm_PCM
       'DriverID=MySQL')
     LoginPrompt = False
     BeforeConnect = con_PCMBeforeConnect
-    Left = 96
-    Top = 40
+    Left = 56
+    Top = 216
   end
   object qry_work: TFDQuery
     Connection = con_PCM
@@ -21,19 +21,11 @@ object dm_PCM: Tdm_PCM
     Left = 608
     Top = 448
   end
-  object FDPhysMySQLDriverLink1: TFDPhysMySQLDriverLink
-    Left = 608
-    Top = 135
+  object physdvrLnk_MySQL: TFDPhysMySQLDriverLink
+    Left = 56
+    Top = 359
   end
-  object FDPhysMSSQLDriverLink1: TFDPhysMSSQLDriverLink
-    Left = 608
-    Top = 248
-  end
-  object FDPhysADSDriverLink1: TFDPhysADSDriverLink
-    Left = 608
-    Top = 191
-  end
-  object qry_work1: TFDQuery
+  object qry_work_Sub: TFDQuery
     Connection = con_PCM
     SQL.Strings = (
       '')
@@ -44,32 +36,72 @@ object dm_PCM: Tdm_PCM
     Connection = con_PCM
     SQL.Strings = (
       '')
-    Left = 144
-    Top = 296
+    Left = 56
+    Top = 280
   end
-  object RESTRequest2: TRESTRequest
+  object rstreq_Push: TRESTRequest
     AssignedValues = [rvConnectTimeout, rvReadTimeout]
-    Client = RESTClient2
+    Client = rstClt_Push
     Method = rmPOST
     Params = <>
-    Response = RESTResponse2
+    Response = rstrsp_Push
     SynchronizedEvents = False
-    Left = 312
+    Left = 56
     Top = 88
   end
-  object RESTClient2: TRESTClient
+  object rstClt_Push: TRESTClient
     Accept = 'application/json, text/plain; q=0.9, text/html;q=0.8,'
     AcceptCharset = 'utf-8, *;q=0.8'
     BaseURL = 'https://fcm.googleapis.com/fcm/send'
     ContentType = 'application/json'
     Params = <>
     SynchronizedEvents = False
-    Left = 72
-    Top = 96
+    Left = 56
+    Top = 32
   end
-  object RESTResponse2: TRESTResponse
+  object rstrsp_Push: TRESTResponse
     ContentType = 'text/html'
-    Left = 312
-    Top = 336
+    Left = 56
+    Top = 153
+  end
+  object qry_cal: TFDQuery
+    Connection = con_PCM
+    FetchOptions.AssignedValues = [evMode, evRecordCountMode]
+    FetchOptions.Mode = fmAll
+    FetchOptions.RecordCountMode = cmTotal
+    SQL.Strings = (
+      '')
+    Left = 512
+    Top = 232
+  end
+  object qry_cal_sub: TFDQuery
+    Connection = con_PCM
+    FetchOptions.AssignedValues = [evMode, evRecordCountMode]
+    FetchOptions.Mode = fmAll
+    FetchOptions.RecordCountMode = cmTotal
+    SQL.Strings = (
+      '')
+    Left = 568
+    Top = 232
+  end
+  object FDQuery1: TFDQuery
+    Connection = con_PCM
+    FetchOptions.AssignedValues = [evMode, evRecordCountMode]
+    FetchOptions.Mode = fmAll
+    FetchOptions.RecordCountMode = cmTotal
+    SQL.Strings = (
+      '')
+    Left = 608
+    Top = 304
+  end
+  object FDQuery2: TFDQuery
+    Connection = con_PCM
+    FetchOptions.AssignedValues = [evMode, evRecordCountMode]
+    FetchOptions.Mode = fmAll
+    FetchOptions.RecordCountMode = cmTotal
+    SQL.Strings = (
+      '')
+    Left = 512
+    Top = 296
   end
 end

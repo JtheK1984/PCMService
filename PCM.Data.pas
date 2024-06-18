@@ -3,55 +3,98 @@ unit PCM.Data;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Variants, Data.DB, dxmdaset, FireDAC.Stan.Intf,
-  FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf,
-  FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys,
-  FireDAC.Phys.ADSDef, FireDAC.Phys.MSSQLDef, FireDAC.VCLUI.Wait,
-  FireDAC.Comp.UI, FireDAC.Phys.ODBCBase, FireDAC.Phys.MSSQL, FireDAC.Phys.ADS,
-  FireDAC.Comp.Client, idHash,inifiles, FireDAC.Stan.Param, FireDAC.DatS,
-  FireDAC.DApt.Intf, FireDAC.DApt, FireDAC.Phys.MySQL, FireDAC.Phys.MySQLDef,
-  FireDAC.Comp.DataSet, IPPeerServer, DbxCompressionFilter,
-  DbxSocketChannelNative, Datasnap.DSCommonServer,System.JSON, Winapi.Windows,
-  Datasnap.DSTCPServerTransport, Datasnap.DSServer, Datasnap.DSAuth,Datasnap.DSSession,
-  Datasnap.DSHTTP, Datasnap.DSHTTPWebBroker,IdHashMessageDigest, REST.Types,
-  REST.Client, Data.Bind.Components, Data.Bind.ObjectScope, Vcl.StdCtrls;
-
+  {$Region Uses}
+  Data.Bind.Components,
+  Data.Bind.ObjectScope,
+  Data.DB,
+  Datasnap.DSAuth,
+  Datasnap.DSCommonServer,
+  Datasnap.DSHTTP,
+  Datasnap.DSHTTPWebBroker,
+  Datasnap.DSServer,
+  Datasnap.DSSession,
+  Datasnap.DSTCPServerTransport,
+  DbxCompressionFilter,
+  DbxSocketChannelNative,
+  dxmdaset,
+  FireDAC.Comp.Client,
+  FireDAC.Comp.DataSet,
+  FireDAC.Comp.UI,
+  FireDAC.DApt,
+  FireDAC.DApt.Intf,
+  FireDAC.DatS,
+  FireDAC.Phys,
+  FireDAC.Phys.ADS,
+  FireDAC.Phys.ADSDef,
+  FireDAC.Phys.Intf,
+  FireDAC.Phys.MSSQL,
+  FireDAC.Phys.MSSQLDef,
+  FireDAC.Phys.MySQL,
+  FireDAC.Phys.MySQLDef,
+  FireDAC.Phys.ODBCBase,
+  FireDAC.Stan.Async,
+  FireDAC.Stan.Def,
+  FireDAC.Stan.Error,
+  FireDAC.Stan.Intf,
+  FireDAC.Stan.Option,
+  FireDAC.Stan.Param,
+  FireDAC.Stan.Pool,
+  FireDAC.UI.Intf,
+  FireDAC.VCLUI.Wait,
+  idHash,
+  IdHashMessageDigest,
+  inifiles,
+  IPPeerServer,
+  REST.Client,
+  REST.Types,
+  System.Classes,
+  System.JSON,
+  System.SysUtils,
+  System.Variants,
+  Vcl.StdCtrls,
+  Winapi.Windows;
+  {$EndRegion Uses}
 type
+  {$Region Type}
   TPCMRestparam = record
     sParam: string;
   end;
+
   TPCMRestParamter = array of TPCMRestparam;
-type
+
   Tdm_PCM = class(TDataModule)
     con_PCM: TFDConnection;
-    qry_work: TFDQuery;
-    FDPhysMySQLDriverLink1: TFDPhysMySQLDriverLink;
-    FDPhysMSSQLDriverLink1: TFDPhysMSSQLDriverLink;
-    FDPhysADSDriverLink1: TFDPhysADSDriverLink;
-    qry_work1: TFDQuery;
+    physdvrLnk_MySQL: TFDPhysMySQLDriverLink;
+    rstClt_Push: TRESTClient;
+    rstreq_Push: TRESTRequest;
+    rstrsp_Push: TRESTResponse;
     qry_Service: TFDQuery;
-    RESTRequest2: TRESTRequest;
-    RESTClient2: TRESTClient;
-    RESTResponse2: TRESTResponse;
+    qry_work: TFDQuery;
+    qry_work_Sub: TFDQuery;
+    qry_cal: TFDQuery;
+    qry_cal_sub: TFDQuery;
+    FDQuery1: TFDQuery;
+    FDQuery2: TFDQuery;
     procedure con_PCMBeforeConnect(Sender: TObject);
   private
     { Private-Deklarationen }
   public
     { Public-Deklarationen }
-    sServer: String;
+    arRestParam: TPCMRestParamter;
+    icode: integer;
     iDBType: integer;
     iHDID: integer;
+    sMessage: String;
     sPCID: String;
+    sServer: String;
     function ReadServerAdress: boolean;
   end;
-
+  {$EndRegion Type}
 var
   dm_PCM: Tdm_PCM;
-  arRestParam: TPCMRestParamter;
-  icode: integer;
-  sMessage: String;
 
 const
+  {$Region Const}
   DB_MYSQL = 0;
   DB_MSSQL = 1;
   DB_ADS = 2;
@@ -64,6 +107,7 @@ const
   PCM_Logname =  'PCMService';
   PCM_Connectionname =  'Service';
   PCM_Programmnummer =  12;
+  {$EndRegion Const}
 
 implementation
 
@@ -71,8 +115,13 @@ implementation
 
 {$R *.dfm}
 
-uses PCM.Functions;
+uses  PCM.Functions,
+      PCM.Strings;
 
+////////////////////////////////////////////////////////////////////////////////
+// Database Functions                                                         //
+////////////////////////////////////////////////////////////////////////////////
+{$Region Database}
 procedure Tdm_PCM.con_PCMBeforeConnect(Sender: TObject);
 begin
   con_PCM.LoginPrompt := False;
@@ -116,6 +165,7 @@ begin
   sServer:= iniFile.ReadString('Config','Server','localhost');
   iDBType:=iniFile.ReadInteger('Database','Type',0);
   iniFile.Free;
+  result:= false;
   try
     con_PCM.Params.Values['Server'] := sServer;
     try
@@ -148,5 +198,5 @@ begin
 		Writelog(PCM_Logname,rs_PCMLog_PCMINIPruefen + ExtractFilePath(ParamStr(0)) +'PCM.ini.',2);
   end;
 end;
-
+{$EndRegion Database}
 end.
