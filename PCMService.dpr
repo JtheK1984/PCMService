@@ -7,6 +7,9 @@ uses
 
 {$R *.RES}
 
+{$SetPEOptFlags IMAGE_DLLCHARACTERISTICS_TERMINAL_SERVER_AWARE}
+{$SetPEFlags IMAGE_FILE_REMOVABLE_RUN_FROM_SWAP or IMAGE_FILE_NET_RUN_FROM_SWAP or IMAGE_FILE_LARGE_ADDRESS_AWARE}
+
 begin
   if not Application.DelayInitialize or Application.Installing then
     Application.Initialize;

@@ -256,7 +256,6 @@ procedure TPCM_Service.TerminAusfuehren;
       end;
     end;
   end;
-
 begin
   try
     Writelog(PCM_Logname,rs_PCMService_Termin1 + qry_Termine.FieldByName('Name').AsString + rs_PCMService_Termin2,0);
