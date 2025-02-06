@@ -1214,10 +1214,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
     <Target Name="CompressWin64">
         <Exec Command="$(Program_Compress) $(DCC_ExeOutput)\$(SanitizedProjectName).exe"/>
     </Target>
-    <Target Name="Localize">
-        <Exec Command="$(Program_Soluling) -lang:de build $(DCC_ExeOutput)\$(SanitizedProjectName).ntp"/>
-        <Exec Command="$(Program_Soluling) -lang:en build $(DCC_ExeOutput)\$(SanitizedProjectName).ntp"/>
-    </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Delphi.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')"/>
     <Import Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj" Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')"/>
     <Import Project="$(MSBuildProjectName).deployproj" Condition="Exists('$(MSBuildProjectName).deployproj')"/>
