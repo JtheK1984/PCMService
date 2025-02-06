@@ -81,7 +81,7 @@
         <DCC_UnitSearchPath>PCM-Functions;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_DynamicBase>false</DCC_DynamicBase>
         <DCC_HighEntropyVa>false</DCC_HighEntropyVa>
-        <DCC_NXCompat>false</DCC_NXCompat>				
+        <DCC_NXCompat>false</DCC_NXCompat>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <PreBuildEventCancelOnError>false</PreBuildEventCancelOnError>
@@ -158,12 +158,10 @@ $(PostBuildEvent)]]></PostBuildEvent>
         </DelphiCompile>
         <DCCReference Include="PCM.Main.pas">
             <Form>PCM_Service</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TService</DesignClass>
         </DCCReference>
         <DCCReference Include="PCM.Data.pas">
             <Form>dm_PCM</Form>
-            <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
         <BuildConfiguration Include="Base">
