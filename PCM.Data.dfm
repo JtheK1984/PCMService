@@ -9,7 +9,9 @@ object dm_PCM: Tdm_PCM
       'Server='
       'Port=3307'
       'DriverID=MySQL')
-    LoginPrompt = False
+    ResourceOptions.AssignedValues = [rvAutoReconnect]
+    ResourceOptions.AutoReconnect = True    
+	LoginPrompt = False
     BeforeConnect = con_PCMBeforeConnect
     Left = 56
     Top = 216
