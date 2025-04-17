@@ -122,6 +122,8 @@ BRCC32.exe Versioninfo64.rc
 $(PreBuildEvent)]]></PreBuildEvent>
         <PostBuildEvent><![CDATA[sc start PCM_Service
 $(PostBuildEvent)]]></PostBuildEvent>
+        <PostBuildEventCancelOnError>false</PostBuildEventCancelOnError>
+        <PreBuildEventCancelOnError>false</PreBuildEventCancelOnError>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -137,14 +139,14 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <BT_BuildType>Debug</BT_BuildType>
         <VerInfo_Keys>CompanyName=PCM;FileVersion=1.6.0.1;InternalName=PCM Service 32-Bit;LegalCopyright=Jens Henske;LegalTrademarks=;OriginalFilename=PCM Service 32-Bit;ProductName=$(MSBuildProjectName) 32-Bit;ProductVersion=1.6;Comments=011023;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName)</VerInfo_Keys>
         <Debugger_RunParams>/install</Debugger_RunParams>
-        <PostBuildEvent><![CDATA[sc start PCM_Service$(PostBuildEvent)
-$(PostBuildEvent)]]></PostBuildEvent>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <Icon_MainIcon>PCMService_Icon.ico</Icon_MainIcon>
         <DCC_OutputDRCFile>true</DCC_OutputDRCFile>
         <VerInfo_Keys>CompanyName=PCM;FileVersion=1.6.0.1;InternalName=PCM Service 64-Bit;LegalCopyright=Jens Henske;LegalTrademarks=;OriginalFilename=PCM Service 64-Bit;ProductName=$(MSBuildProjectName) 64-Bit;ProductVersion=1.6;Comments=011023;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName)</VerInfo_Keys>
+        <PostBuildEventCancelOnError>false</PostBuildEventCancelOnError>
+        <PreBuildEventCancelOnError>false</PreBuildEventCancelOnError>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -156,8 +158,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <BT_BuildType>Debug</BT_BuildType>
         <VerInfo_Keys>CompanyName=PCM;FileVersion=1.6.0.1;InternalName=PCM Service 32-Bit;LegalCopyright=Jens Henske;LegalTrademarks=;OriginalFilename=PCM Service 32-Bit;ProductName=$(MSBuildProjectName) 32-Bit;ProductVersion=1.6;Comments=011023;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName)</VerInfo_Keys>
         <Icon_MainIcon>PCMService_Icon.ico</Icon_MainIcon>
-        <PostBuildEvent><![CDATA[sc start PCM_Service
-$(PostBuildEvent)]]></PostBuildEvent>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
@@ -234,7 +234,6 @@ $(PostBuildEvent)]]></PostBuildEvent>
                 <DeployFile LocalName="Win32\Debug\PCMService.exe" Configuration="Debug" Class="ProjectOutput"/>
                 <DeployFile LocalName="Win32\Debug\PCMService1.exe" Configuration="Debug" Class="ProjectOutput"/>
                 <DeployFile LocalName="Win32\Debug\ZMIRESTServer.exe" Configuration="Debug" Class="ProjectOutput"/>
-                <DeployFile LocalName="Win32\Release\PCMService.exe" Configuration="Release" Class="ProjectOutput"/>
                 <DeployFile LocalName="Win32\Release\PCMService.exe" Configuration="Release" Class="ProjectOutput"/>
                 <DeployFile LocalName="Win32\Release\ZMIRESTServer.exe" Configuration="Release" Class="ProjectOutput"/>
                 <DeployFile LocalName="Win64\Debug\PCMService1.exe" Configuration="Debug" Class="ProjectOutput"/>
@@ -1213,31 +1212,31 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <PreBuildEventIgnoreExitCode>True</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>sc start PCM_Service$(PostBuildEvent)&amp;sc start PCM_Service</PostBuildEvent>
+        <PostBuildEvent>sc start PCM_Service</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>True</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Debug' And '$(Platform)'=='Win64'">
-        <PreBuildEvent>sc stop PCM_Service&amp;&amp;PCM-Functions\PCMIncrementBuildNumber.exe Versioninfo64.rc&amp;&amp;Del Versioninfo64.res&amp;&amp;BRCC32.exe Versioninfo64.rc</PreBuildEvent>
-        <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
+        <PreBuildEvent>sc stop PCM_Service&amp;PCM-Functions\PCMIncrementBuildNumber.exe Versioninfo64.rc&amp;Del Versioninfo64.res&amp;BRCC32.exe Versioninfo64.rc</PreBuildEvent>
+        <PreBuildEventIgnoreExitCode>True</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
         <PostBuildEvent>sc start PCM_Service</PostBuildEvent>
-        <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
+        <PostBuildEventIgnoreExitCode>True</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win32'">
         <PreBuildEvent>sc stop PCM_Service&amp;PCM-Functions\PCMIncrementBuildNumber.exe Versioninfo32.rc &amp;Del Versioninfo32.res&amp;BRCC32.exe Versioninfo32.rc</PreBuildEvent>
         <PreBuildEventIgnoreExitCode>True</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
-        <PostBuildEvent>sc start PCM_Service&amp;sc start PCM_Service</PostBuildEvent>
+        <PostBuildEvent>sc start PCM_Service</PostBuildEvent>
         <PostBuildEventIgnoreExitCode>True</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Release' And '$(Platform)'=='Win64'">
-        <PreBuildEvent>sc stop PCM_Service&amp;&amp;PCM-Functions\PCMIncrementBuildNumber.exe Versioninfo64.rc&amp;&amp;Del Versioninfo64.res&amp;&amp;BRCC32.exe Versioninfo64.rc</PreBuildEvent>
-        <PreBuildEventIgnoreExitCode>False</PreBuildEventIgnoreExitCode>
+        <PreBuildEvent>sc stop PCM_Service&amp;PCM-Functions\PCMIncrementBuildNumber.exe Versioninfo64.rc&amp;Del Versioninfo64.res&amp;BRCC32.exe Versioninfo64.rc</PreBuildEvent>
+        <PreBuildEventIgnoreExitCode>True</PreBuildEventIgnoreExitCode>
         <PreLinkEvent/>
         <PreLinkEventIgnoreExitCode>False</PreLinkEventIgnoreExitCode>
         <PostBuildEvent>sc start PCM_Service</PostBuildEvent>
-        <PostBuildEventIgnoreExitCode>False</PostBuildEventIgnoreExitCode>
+        <PostBuildEventIgnoreExitCode>True</PostBuildEventIgnoreExitCode>
     </PropertyGroup>
 </Project>
