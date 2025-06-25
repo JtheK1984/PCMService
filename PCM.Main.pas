@@ -139,7 +139,7 @@ procedure TPCM_Service.ServiceStart(Sender: TService;var Started: Boolean);
 begin
   if dm_PCM.ReadServerAdress then
   begin
-    WriteLog(PCM_LOGname,rs_PCMLog_Verbindungerfolgreich,0);
+    WriteLog(PCM_LOGname,rs_Function_Helper_Verbindungerfolgreich,0);
     WriteLog(PCM_LOGname,rs_PCMService_HIID + IntToStr(dm_PCM.iHDID),0);
     WriteLog(PCM_LOGname,rs_PCMService_PCID + dm_PCM.sPCID,0);
     tmr_Service.Enabled:= true;

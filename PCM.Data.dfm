@@ -1,6 +1,7 @@
 object dm_PCM: Tdm_PCM
-  Height = 731
-  Width = 1171
+  Height = 1097
+  Width = 1757
+  PixelsPerInch = 144
   object con_PCM: TFDConnection
     Params.Strings = (
       'Database=pcm'
@@ -10,36 +11,36 @@ object dm_PCM: Tdm_PCM
       'Port=3307'
       'DriverID=MySQL')
     ResourceOptions.AssignedValues = [rvAutoReconnect]
-    ResourceOptions.AutoReconnect = True    
-	LoginPrompt = False
+    ResourceOptions.AutoReconnect = True
+    LoginPrompt = False
     BeforeConnect = con_PCMBeforeConnect
-    Left = 56
-    Top = 216
+    Left = 84
+    Top = 324
   end
   object qry_work: TFDQuery
     Connection = con_PCM
     SQL.Strings = (
       '')
-    Left = 608
-    Top = 448
+    Left = 912
+    Top = 672
   end
   object physdvrLnk_MySQL: TFDPhysMySQLDriverLink
-    Left = 56
-    Top = 359
+    Left = 84
+    Top = 539
   end
   object qry_work_Sub: TFDQuery
     Connection = con_PCM
     SQL.Strings = (
       '')
-    Left = 656
-    Top = 448
+    Left = 984
+    Top = 672
   end
   object qry_Service: TFDQuery
     Connection = con_PCM
     SQL.Strings = (
       '')
-    Left = 56
-    Top = 280
+    Left = 84
+    Top = 420
   end
   object rstreq_Push: TRESTRequest
     AssignedValues = [rvConnectTimeout, rvReadTimeout]
@@ -48,8 +49,8 @@ object dm_PCM: Tdm_PCM
     Params = <>
     Response = rstrsp_Push
     SynchronizedEvents = False
-    Left = 56
-    Top = 88
+    Left = 84
+    Top = 132
   end
   object rstClt_Push: TRESTClient
     Accept = 'application/json, text/plain; q=0.9, text/html;q=0.8,'
@@ -58,13 +59,13 @@ object dm_PCM: Tdm_PCM
     ContentType = 'application/json'
     Params = <>
     SynchronizedEvents = False
-    Left = 56
-    Top = 32
+    Left = 84
+    Top = 48
   end
   object rstrsp_Push: TRESTResponse
     ContentType = 'text/html'
-    Left = 56
-    Top = 153
+    Left = 84
+    Top = 230
   end
   object qry_cal: TFDQuery
     Connection = con_PCM
@@ -73,8 +74,8 @@ object dm_PCM: Tdm_PCM
     FetchOptions.RecordCountMode = cmTotal
     SQL.Strings = (
       '')
-    Left = 512
-    Top = 232
+    Left = 768
+    Top = 348
   end
   object qry_cal_sub: TFDQuery
     Connection = con_PCM
@@ -83,8 +84,8 @@ object dm_PCM: Tdm_PCM
     FetchOptions.RecordCountMode = cmTotal
     SQL.Strings = (
       '')
-    Left = 568
-    Top = 232
+    Left = 852
+    Top = 348
   end
   object FDQuery1: TFDQuery
     Connection = con_PCM
@@ -93,8 +94,8 @@ object dm_PCM: Tdm_PCM
     FetchOptions.RecordCountMode = cmTotal
     SQL.Strings = (
       '')
-    Left = 608
-    Top = 304
+    Left = 912
+    Top = 456
   end
   object FDQuery2: TFDQuery
     Connection = con_PCM
@@ -103,7 +104,7 @@ object dm_PCM: Tdm_PCM
     FetchOptions.RecordCountMode = cmTotal
     SQL.Strings = (
       '')
-    Left = 512
-    Top = 296
+    Left = 768
+    Top = 444
   end
 end
