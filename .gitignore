@@ -74,3 +74,5 @@ modules/
 /Win64/Release/*.ini
 /Win64/Release/*.log
 /*.ini
+/Versioninfo32.RES
+/Versioninfo64.RES
