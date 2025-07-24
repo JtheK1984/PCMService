@@ -21,11 +21,11 @@ BEGIN
   BEGIN
     BLOCK "040704B0"
     BEGIN
-      VALUE "FileDescription", "Service für Sicherungen\0"
+      VALUE "FileDescription", "PCM - Service\0"
       VALUE "FileVersion", VERSION_STRING_FULL "\0"
-      VALUE "InternalName", "PCM-Service.exe \0"
+      VALUE "InternalName", "PCMService.exe \0"
       VALUE "LegalCopyright", "PCM (Jens Henske)\0"
-      VALUE "ProductName", "PCMService 32-Bit\0"
+      VALUE "ProductName", "PCM-Service 32-Bit\0"
       VALUE "ProductVersion",VERSION_STRING_SMALL "\0"
       VALUE "CompanyName", "PCM\0"
       VALUE "OriginalFilename", "PCMService.exe (32-Bit)\0"
