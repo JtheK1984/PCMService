@@ -5,6 +5,8 @@ msbuild E:/Projekte/Windows/PCMService/PCMService.dproj /t:Clean;Build;CompressW
 
 echo "Kopiere Datei ins Setupverzeichnis 32-Bit"
 copy /y /v E:\Projekte\Windows\PCMService\Win32\Release\PCMService.exe "e:\Inno\Setupfiles\Programme\PCMService"
+copy /y /v E:\Projekte\Windows\PCMService\Win32\Release\PCMService.DE "e:\Inno\Setupfiles\Programme\PCMService"
+copy /y /v E:\Projekte\Windows\PCMService\Win32\Release\PCMService.EN "e:\Inno\Setupfiles\Programme\PCMService"
 
 echo "Kopiere Datei ins Setupverzeichnis 64-Bit"
 copy /y /v E:\Projekte\Windows\PCMService\Win64\Release\PCMService.exe "e:\Inno\Setupfiles\Programme\PCMService_x64"
