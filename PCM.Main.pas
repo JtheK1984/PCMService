@@ -101,7 +101,7 @@ uses
       PCM.Data,
       PCM.Functions,
       PCM.Functions.Server.Methods,
-      PCM.Strings;
+      PCM.Service.Strings;
 
 procedure ServiceController(CtrlCode: DWord); stdcall;
 begin

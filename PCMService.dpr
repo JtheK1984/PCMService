@@ -4,7 +4,8 @@ uses
   Windows,
   PCM.Main in 'PCM.Main.pas' {PCM_Service: TService},
   PCM.Data in 'PCM.Data.pas' {dm_PCM: TDataModule},
-  Vcl.SvcMgr;
+  Vcl.SvcMgr,
+  PCM.Service.Strings in 'Modules\PCM.Service.Strings.pas';
 
 {$R *.RES}
 
