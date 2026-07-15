@@ -4,6 +4,9 @@
 # Kurzbeschreibung:
   PCM - Service
 
+# Beschrebung: 
+  -  Service zum automatischen Herunterfahren des Computers sowie SAicherung von definierten Dateien
+
 # Entwicklungsumgebung:
   DELPHI 12.3 Athens
 
